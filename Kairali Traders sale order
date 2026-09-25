@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Kairali Traders sales order</title>
+    
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 15px;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #111827;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            text-align: center;
+            font-size: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[list] {
+            cursor: pointer;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 30px;
+        }
+        input[list]:focus {
+            cursor: text;
+        }
+        input[readonly] {
+            background-color: #e5e7eb;
+            cursor: not-allowed;
+            font-weight: bold;
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            min-width: 650px; 
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+        .btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .btn-remove {
+            background-color: #ef4444;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+        .btn-remove:hover {
+            background-color: #dc2626;
+        }
+        .total-container {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 0;
+        }
+        .html2pdf__container .no-print {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Centralized Data Lists for Native Mobile Search -->
+<datalist id="debtorList">
+    <option value="ALIKKA"></option>
+    <option value="AMANA STORE- MKD"></option>
+    <option value="AMS STORE"></option>
+    <option value="ANWAR STORE"></option>
+    <option value="BABUETTAN"></option>
+    <option value="BAKERY"></option>
+    <option value="BALETTAN"></option>
+    <option value="BIRIYANI CENTRE"></option>
+    <option value="BISMI 2"></option>
+    <option value="BISMI STORE 1"></option>
+    <option value="CHAVAKKAD STORE"></option>
+    <option value="CHIKKU 1"></option>
+    <option value="CHIKKU 2"></option>
+    <option value="CHOISE STORE"></option>
+    <option value="CITY BAZAR"></option>
+    <option value="CP1"></option>
+    <option value="CP2"></option>
+    <option value="EVERGREEN"></option>
+    <option value="FASEELA STORE"></option>
+    <option value="FATHIMA STORE"></option>
+    <option value="GJR AGENCIES"></option>
+    <option value="GOLDEN SUPER MARKET"></option>
+    <option value="GRAND HYPERMARKET"></option>
+    <option value="GR STORE"></option>
+    <option value="HALA STORE"></option>
+    <option value="HASEENA STORE"></option>
+    <option value="HASSAN STORE"></option>
+    <option value="HAYA - ARYAMBAVU"></option>
+    <option value="HAYA HYPER MARKET"></option>
+    <option value="HAYA HYPERMARKET-CHANGILEERI"></option>
+    <option value="IZZA FOODS"></option>
+    <option value="JANASAMRUDDHI STORES"></option>
+    <option value="JASMINE"></option>
+    <option value="JTC"></option>
+    <option value="KAIRALI - KARIMPUZHA"></option>
+    <option value="KAIRALI SUPER MARKET"></option>
+    <option value="KKH STORE"></option>
+    <option value="KM STORE, KONGAD"></option>
+    <option value="KM STORE - MANGOD"></option>
+    <option value="KOTTARAM HYPERMARKET"></option>
+    <option value="KOYA STORE"></option>
+    <option value="KPR STORE"></option>
+    <option value="KP STORE"></option>
+    <option value="KRISHNACHANDRAN"></option>
+    <option value="KRISHNA STORE"></option>
+    <option value="KRISHNA STORE -TVM"></option>
+    <option value="MALABAR STORE"></option>
+    <option value="Malabar Stores Supermarket"></option>
+    <option value="MANIS STORE"></option>
+    <option value="MANUKKA"></option>
+    <option value="MARGIN FREE MARKET"></option>
+    <option value="MATTAM HYPERMARKET"></option>
+    <option value="MBS STORE"></option>
+    <option value="MILL-KRISHNA"></option>
+    <option value="MILLS DOMINIC"></option>
+    <option value="MK STORE-KULUKILIYAD"></option>
+    <option value="MK STORE -MANNAMPAΤΤΑ"></option>
+    <option value="MR.HAKKIM"></option>
+    <option value="MR.HASSAN"></option>
+    <option value="MR.KABEER"></option>
+    <option value="MR.MANI"></option>
+    <option value="MR.MUTHU ETTAN"></option>
+    <option value="MR.NAIR"></option>
+    <option value="MR.RAJAN"></option>
+    <option value="MR.RAMADASAN"></option>
+    <option value="MR.RAMANKUTTY"></option>
+    <option value="MR.RAVI"></option>
+    <option value="MR.SALI"></option>
+    <option value="MR.SASI"></option>
+    <option value="MR.SETHU ETTAN"></option>
+    <option value="MR.SHAMNAS"></option>
+    <option value="MR.SHAMSU"></option>
+    <option value="MR.SREEJITH"></option>
+    <option value="MR.SUNDARAN"></option>
+    <option value="MR.UNNIKANNAN"></option>
+    <option value="MR.VAHAB"></option>
+    <option value="MR. VINU"></option>
+    <option value="MVP MILLS"></option>
+    <option value="NASEEB"></option>
+    <option value="NASEEB STORE -STAFF"></option>
+    <option value="NATURAL STORES"></option>
+    <option value="NEETHI STORE"></option>
+    <option value="NEETHI STORE (COVER)"></option>
+    <option value="NEW STORE"></option>
+    <option value="NK STORE..KTP"></option>
+    <option value="NK STORES"></option>
+    <option value="NK STORE UTHRATHIL KAVU"></option>
+    <option value="N M STORE"></option>
+    <option value="OK V STORE"></option>
+    <option value="Other Sundry Debtors"></option>
+    <option value="PAPPAD MARKET"></option>
+    <option value="PARAKKAL STORE"></option>
+    <option value="PARAMOUNT RESTAURENT"></option>
+    <option value="PK STORE - AKKIPADAM"></option>
+    <option value="PK STORE - CHUNGAM"></option>
+    <option value="PK STORE -THACHAMPARA"></option>
+    <option value="POOJA STORE"></option>
+    <option value="PP SALAM"></option>
+    <option value="PT HOME CENTRE"></option>
+    <option value="RAHATH STORE"></option>
+    <option value="RITZY MALABAR"></option>
+    <option value="ROYAL"></option>
+    <option value="RUCHI HOTEL"></option>
+    <option value="RUN STATIONARY"></option>
+    <option value="SADHYA CATTERINGS"></option>
+    <option value="SANATHANA POOJA STORE"></option>
+    <option value="SANKAR"></option>
+    <option value="SARAVANA STORE -CHANDAPURA"></option>
+    <option value="SARAVANA STORE - HOSPITAL JN"></option>
+    <option value="SHEEBA STORES"></option>
+    <option value="SHERIFFKA"></option>
+    <option value="SIDHIKKA"></option>
+    <option value="S M STORE"></option>
+    <option value="STAR PAPER WINDING"></option>
+    <option value="SUBASH STORE"></option>
+    <option value="SURESH ETTAN"></option>
+    <option value="SURYA HOTEL"></option>
+    <option value="U K STORE"></option>
+    <option value="UK STORE - MANGOD"></option>
+    <option value="UNNIKRISHNAN"></option>
+    <option value="USHAS POOJA STORE"></option>
+    <option value="VINAYAKA POOJA STORE"></option>
+    <option value="V J STORE"></option>
+    <option value="V M STORE"></option>
+    <option value="V R STORE"></option>
+    <option value="WELCOME STORE -MKD"></option>
+    <option value="YOUSAFFKA"></option>
+</datalist>
+
+<datalist id="stockList">
+    <option value='10" PLATE'></option>
+    <option value='10GM ORANGERED'></option>
+    <option value='21 WASHING SOAP'></option>
+    <option value='28ML BIRIYANI'></option>
+    <option value='28ML PINAPPLE ESSENCE'></option>
+    <option value='28ML ROSE WHITE'></option>
+    <option value='28ML VANNILA'></option>
+    <option value='6" PLATE'></option>
+    <option value='AASHIRVAAD ATTA'></option>
+    <option value='AC LONG CUT VERMICELLI 300GM'></option>
+    <option value='AGARBATHIES'></option>
+    <option value='AJMI FRIED SUJI RAVA 1KG'></option>
+    <option value='AJMI FRIED SUJI RAVA 500GM'></option>
+    <option value='AJMI RICE POWDER'></option>
+    <option value='AJMI RICE POWDER 500GM'></option>
+    <option value='AJMI STEAM PUTT 1KG'></option>
+    <option value='AJMI STEAM PUTTU 500G'></option>
+    <option value='ALFA PLUS HAND WASH'></option>
+    <option value='ALMONDS NONPAREIL (BADAM 2)'></option>
+    <option value='AMRUTHAM NANNARI SARBATH'></option>
+    <option value='ANDIKANNU F'></option>
+    <option value='ANDIKANNU SECOND'></option>
+    <option value='AROKYAM RAGI SEMIYA'></option>
+    <option value='ATHI(FIG)MEDIUM'></option>
+    <option value='ATTA'></option>
+    <option value='AVT 1KG HB'></option>
+    <option value='AVT COFFEE 200GM'></option>
+    <option value='AVT GARDEN FRESH'></option>
+    <option value='AVT GOLD CUP 10RS'></option>
+    <option value='AVT NATURE'S CUP 100GM'></option>
+    <option value='AVT PKT 5KG'></option>
+    <option value='AVT PRE TEA 100 GM'></option>
+    <option value='AVT PRE TEA 1KG'></option>
+    <option value='AVT PRE TEA 250GM'></option>
+    <option value='AVT PRE TEA 500 GM'></option>
+    <option value='AVT PRE TEA 50GM'></option>
+    <option value='AVT PRE TEA CB 1 KG'></option>
+    <option value='AVT PRE TEA CB 2 KG'></option>
+    <option value='AVT PRE TEA HB 2 KG'></option>
+    <option value='AVT RAJA'></option>
+    <option value='AVT TEA @RS.10'></option>
+    <option value='AYAMODAKAM BOARD'></option>
+    <option value='BADAM BOARD KAIRALI'></option>
+    <option value='BADAM FIRST'></option>
+    <option value='BAJJI MAVU'></option>
+    <option value='BAKING SODA'></option>
+    <option value='BAMBINO BADAM MILK 11G'></option>
+    <option value='BAMBINO BADAM MILK 200 G'></option>
+    <option value='BANSI RAVA'></option>
+    <option value='BARARI DATES 10 KG'></option>
+    <option value='BARLEY RICE'></option>
+    <option value='BAT FRYUMS'></option>
+    <option value='BATTERY'></option>
+    <option value='BAY LEAF'></option>
+    <option value='BEANS KG'></option>
+    <option value='BG KAYAM POWDER 10 GM'></option>
+    <option value='BG KAYAM POWDER 15GM'></option>
+    <option value='BG KAYAM YELLOW'></option>
+    <option value='BIG CRYSTAL SUGAR'></option>
+    <option value='BIG CRYSTAL SUGAR LOOSE'></option>
+    <option value='BIG MUSTARD'></option>
+    <option value='BIG ONION'></option>
+    <option value='BIG SPOON'></option>
+    <option value='BIO COVER SECOND'></option>
+    <option value='BIO PLATE 10*12'></option>
+    <option value='BIRIYANI KIT'></option>
+    <option value='BIRIYANI RICE'></option>
+    <option value='BLACK KISHMISH'></option>
+    <option value='BLACK ORID (HUSK)'></option>
+    <option value='BLACK RAISINS INDIAN'></option>
+    <option value='BLACK SALT POWDER'></option>
+    <option value='BLEACHING POWDER'></option>
+    <option value='BUTTER PAPER KG F'></option>
+    <option value='CANDLES'></option>
+    <option value='CAP'></option>
+    <option value='CASHEW 240'></option>
+    <option value='CASHEW BOARD KAIRALI'></option>
+    <option value='CASHEW JH SPLIT'></option>
+    <option value='CASHEW KERNALS'></option>
+    <option value='CASHEW NUT 320'></option>
+    <option value='CASHEW PKW'></option>
+    <option value='CHAMA RICE BROWN'></option>
+    <option value='CHAMA RICE WHITE (VARUGU)'></option>
+    <option value='CHANDRIKA 125GM'></option>
+    <option value='CHANDRIKA 50GM'></option>
+    <option value='CHANDRIKA CLASSIC 125GM'></option>
+    <option value='CHANDRKA CLASSIC 75GM'></option>
+    <option value='CHATMASALA 100 GM(BAKERS)'></option>
+    <option value='CHERRY'></option>
+    <option value='CHERUPAYAR (MOONG DHALL)'></option>
+    <option value='CHERUPAYARPARIPPU'></option>
+    <option value='CHERUPAYAR SECOND'></option>
+    <option value='CHIA SEED'></option>
+    <option value='CHILLIES STEMLESS'></option>
+    <option value='CHILLI OWDER MEDIUM'></option>
+    <option value='CHILLI POWDER'></option>
+    <option value='CHILLI POWDER 100GM KAIRALI'></option>
+    <option value='CHILLI POWDER 250GM KAIRALI'></option>
+    <option value='CHILLI POWDER FIRST'></option>
+    <option value='CHILLI POWDER KASMEERI'></option>
+    <option value='CHILLY POWDER EASTERN 100 GM'></option>
+    <option value='CHILLY POWDER EASTERN 250 GM'></option>
+    <option value='CHINES PEPER POWDER'></option>
+    <option value='CHUKKU KAPPI BOARD'></option>
+    <option value='CITRIC ACID VEWON'></option>
+    <option value='CLING FILM'></option>
+    <option value='COCONUT OIL 1 LTR'></option>
+    <option value='COCONUT OIL 200 ML'></option>
+    <option value='COCONUT OIL 500LTR'></option>
+    <option value='CONTAINER 250ML'></option>
+    <option value='CONTAINER 450ML'></option>
+    <option value='CONTAINER 750ML'></option>
+    <option value='CORIANDER POWDER'></option>
+    <option value='CORIANDER POWDER 100GM KAIRALI'></option>
+    <option value='CORIANDER POWDER 250GM KAIRALI'></option>
+    <option value='CORIANDER POWDER 500G'></option>
+    <option value='C.PAYAR BOX'></option>
+    <option value='CURD CHILLY VATHAL'></option>
+    <option value='CUTEE HERBOW SOAP'></option>
+    <option value='CUTEE SANDAL SOAP'></option>
+    <option value='DAHAMUKTHI 25 GM'></option>
+    <option value='DALDA'></option>
+    <option value='DATES'></option>
+    <option value='DEEPAM OIL 1LTR'></option>
+    <option value='DEEPAM OIL 200ML'></option>
+    <option value='DEEPAM OIL 500ML'></option>
+    <option value='DIVYA MAIDA'></option>
+    <option value='DIVYA ROASTED RAVA'></option>
+    <option value='DIVYA SEMIYA'></option>
+    <option value='DONA CUP 140 ML'></option>
+    <option value='DONA CUP(BIO PAPER CUP)'></option>
+    <option value='DOUBLE HORSE PALADA MIX'></option>
+    <option value='DRY CHILLI BOARD'></option>
+    <option value='DRY CHILLI ENDO 5'></option>
+    <option value='DRY CHILLIES'></option>
+    <option value='DRY CHILLIES AC I'></option>
+    <option value='DRY CHILLIES SECOND'></option>
+    <option value='DRY CHILLY KASHMEERI'></option>
+    <option value='DRY CHILLY KASMEERI SECOND'></option>
+    <option value='DRY GINGER'></option>
+    <option value='DRY GINGER BOARD'></option>
+    <option value='DRY GRAPES'></option>
+    <option value='DRY LEMON'></option>
+    <option value='DRY YEAST'></option>
+    <option value='D.SUGAR CRYSTAL'></option>
+    <option value='EAGLE VINEGAR'></option>
+    <option value='EASTERN CHICKEN MASALA'></option>
+    <option value='EASTERN CHICKEN MASALA @RS.10'></option>
+    <option value='EASTERN CORIANDER POWDER 250G'></option>
+    <option value='EASTERN FISH MASALA'></option>
+    <option value='EASTERN GARAM MASALA 50G'></option>
+    <option value='EASTERN MEAT MASALA 100G'></option>
+    <option value='EASTERN MEAT MASALA @10'></option>
+    <option value='EASTERN PEPPER POWDER 100GM'></option>
+    <option value='EASTERN PEPPER POWDER 50 GM'></option>
+    <option value='EASTERN PICKLE POWDER'></option>
+    <option value='EASTERN SAMBAR@RS.10'></option>
+    <option value='EASTERN SAMBAR POWDER 100GM'></option>
+    <option value='EASTERN TURMERIC POWDER'></option>
+    <option value='ELAM'></option>
+    <option value='ELAM BOARD @63'></option>
+    <option value='ELAM BOARD KAIRALI'></option>
+    <option value='ELITE CHKKI ATTA'></option>
+    <option value='ELITE SAMBA BROKEN WHEAT'></option>
+    <option value='ELLU BLACK FIRST'></option>
+    <option value='ELLU BLACK M'></option>
+    <option value='ELLU BOARD KAIRALI'></option>
+    <option value='ELLU WHITE'></option>
+    <option value='EZEE TRANSPERENT FOIL'></option>
+    <option value='EZ WRAP CLING FILM'></option>
+    <option value='FENUGREEK SECOND'></option>
+    <option value='FLAT GRAM (VELLAPAYAR)'></option>
+    <option value='FLAX SEED'></option>
+    <option value='FRUITOMANS DARK SAUCE'></option>
+    <option value='FRUITOMANS GREEN CHILLY SAUCE'></option>
+    <option value='FRUITOMANS MANGO PULP'></option>
+    <option value='FRUITOMANS MIXED FRUITJAM'></option>
+    <option value='FRUITOMANS RED CHILLY SAUCE'></option>
+    <option value='FRYUMS'></option>
+    <option value='GAHWA(GLASS COFFEE)'></option>
+    <option value='GALA SUPER SCRUB'></option>
+    <option value='GARLIC'></option>
+    <option value='GLASS 150 ML'></option>
+    <option value='GLASS 210 ML'></option>
+    <option value='GLOVES'></option>
+    <option value='GODREJ HAIR DYE'></option>
+    <option value='GOLD WINNER 1 KG'></option>
+    <option value='GOLD WINNER 500L'></option>
+    <option value='GOOD LIFE 1/2 LTR'></option>
+    <option value='GRAM-30KG 1ST'></option>
+    <option value='GRAMBU BOARD'></option>
+    <option value='GRAMBU (CLOVES)'></option>
+    <option value='GRAMBU SECOND'></option>
+    <option value='GRAM FLOUR (KADALAMAVU)'></option>
+    <option value='GREEN PEAS (MATAR DHALL)'></option>
+    <option value='GREEN PEAS WHITE'></option>
+    <option value='HM COVER KF'></option>
+    <option value='HM COVER K F SECOND'></option>
+    <option value='HM LD (S)'></option>
+    <option value='HONEY'></option>
+    <option value='IFF LEMON YELLOW 6597'></option>
+    <option value='IFF ORANGE RED 7802'></option>
+    <option value='INDUPP'></option>
+    <option value='JAGGERY'></option>
+    <option value='JAGGERY POWDER'></option>
+    <option value='JATHIKKA'></option>
+    <option value='JATHI PARIPPU'></option>
+    <option value='JATHI PATHRI POWDER'></option>
+    <option value='JAWARI'></option>
+    <option value='JAWARI PAPPADAM'></option>
+    <option value='JEERAKAM 100 GM'></option>
+    <option value='JEERAKAM 50 GM'></option>
+    <option value='JEERAKAM (CUMIN SEED)'></option>
+    <option value='JUICE GLASS 310ML'></option>
+    <option value='KABUL(WHITE CHICKPEAS)'></option>
+    <option value='KADALAPARIPPU(GRAMDALL)'></option>
+    <option value='KADALAPARIPPU SECOND'></option>
+    <option value='KADUKU LOOSE'></option>
+    <option value='KADUKU WHITE'></option>
+    <option value='KAIRALI COVER'></option>
+    <option value='KAIRALI NALU NURUKK'></option>
+    <option value='KAIRALI SARKARA VARAVU'></option>
+    <option value='KALKANDAM CRYSTAL'></option>
+    <option value='KAMBU'></option>
+    <option value='KANNAN DEVAN 100 G'></option>
+    <option value='KANNAN DEVAN 250 GM'></option>
+    <option value='KANNAN DEVAN 500 GM'></option>
+    <option value='KANNAN DEVAN RED 100 G'></option>
+    <option value='KANNAN DEVAN RED 250 G'></option>
+    <option value='KARIKADALA FIRST(BLACK CHICKPEAS)'></option>
+    <option value='KARIKADALA SECOND'></option>
+    <option value='KARIMBA AVIL'></option>
+    <option value='KARIMBA AVIL 250 GM'></option>
+    <option value='KARIMBA AVIL BAG'></option>
+    <option value='KARIMBAS AVIL 500GM'></option>
+    <option value='KARIMBAS PORI AVIL'></option>
+    <option value='KARIMJEERAKAM'></option>
+    <option value='KARIMJEERAKAM BOARD'></option>
+    <option value='KASKAS BLACK'></option>
+    <option value='KASKAS BOARD'></option>
+    <option value='KASKAS WHITE'></option>
+    <option value='KASMEERI CHILLI BOARD'></option>
+    <option value='KASURI METHI-100GM'></option>
+    <option value='KERA COCONUT OIL 1LTR POUCH'></option>
+    <option value='KERA COCONUT OIL 500 ML'></option>
+    <option value='KER COCONUT OIL 500ML PKT'></option>
+    <option value='KINWRAP FOODWRAP CLING FILM'></option>
+    <option value='KISHMISH'></option>
+    <option value='KISMIS NATURAL'></option>
+    <option value='KITCHEN GLOUSE'></option>
+    <option value='KORA (RAGI)'></option>
+    <option value='KUNTHIRIKKAM'></option>
+    <option value='KURUMULAK BOARD'></option>
+    <option value='KURUMULAK LOOSE'></option>
+    <option value='LEMON SALT'></option>
+    <option value='LG 20GM POWDER'></option>
+    <option value='LG KAYAM 100GM BLOCK'></option>
+    <option value='LG KAYAM 100GM POWDER'></option>
+    <option value='LG KAYAM 200GM POWDER'></option>
+    <option value='LG KAYAM 50 G BLOCK'></option>
+    <option value='LG KAYAM 50 GM POWDER'></option>
+    <option value='LG LUMP 200GM'></option>
+    <option value='LG POWDER 10 GM'></option>
+    <option value='LG POWDER 15GM'></option>
+    <option value='LIGHTER'></option>
+    <option value='LOADING & UNLOADING CHARGES'></option>
+    <option value='LOTUS SEED'></option>
+    <option value='MAAGI CUBE'></option>
+    <option value='MAIDA'></option>
+    <option value='MAIZA STARCH'></option>
+    <option value='MAKRONI'></option>
+    <option value='MALABAR ADA 200 GM'></option>
+    <option value='MALABAR ADA MB 500 G'></option>
+    <option value='MALABAR AVIL 500GM'></option>
+    <option value='MALABAR RICE POWDER'></option>
+    <option value='MALABAR STEAM PUTTU PDR'></option>
+    <option value='MALABAR WHITE ADA - 500GM'></option>
+    <option value='MALAR'></option>
+    <option value='MALLI FIRST'></option>
+    <option value='MALLI SPLIT (DHANIA)'></option>
+    <option value='MANDI MASALA'></option>
+    <option value='MANGO PAPPAD UNFRIED-20KG'></option>
+    <option value='MASALA BOARD KAIRALI'></option>
+    <option value='MASALA BOARD KAIRALI @35'></option>
+    <option value='MASOOR DALL(YELLOW)'></option>
+    <option value='MATTA BIG RICE ADA 500GM'></option>
+    <option value='MATTA PACHARI'></option>
+    <option value='MATTA RICE ADA -1 KG'></option>
+    <option value='MATTA RICE ADA 200 GM'></option>
+    <option value='MATTA RICE ADA - 500 G'></option>
+    <option value='MELAM CHICKEN MASALA 100 GM'></option>
+    <option value='MELAM FISH MASALA'></option>
+    <option value='MELAM KASHMIRI CHILLI POWDER 100 GM'></option>
+    <option value='MELAM KASHMIRI CHILLI POWDER 250GM'></option>
+    <option value='MELAM KERALA SAMBAR 100GM'></option>
+    <option value='MELAM MEAT MASALA'></option>
+    <option value='MELAM MUSTARD 100GM'></option>
+    <option value='MELAM MUSTARD 250GM'></option>
+    <option value='MELAM PICKLE MIX 100GM'></option>
+    <option value='METHI 50KG'></option>
+    <option value='METHI LEAVES'></option>
+    <option value='METRO BIG SPOON'></option>
+    <option value='MILMA GHEE 100 ML'></option>
+    <option value='MILMA GHEE 1 LTR'></option>
+    <option value='MILMA GHEE 200ML'></option>
+    <option value='MILMA GHEE 500 ML'></option>
+    <option value='MILMA GHEE 50 ML'></option>
+    <option value='MINDA HOME FRESH ALUMINIUM FOIL'></option>
+    <option value='MM SOFT TISSUE 19*19'></option>
+    <option value='MM SOFT TISSUE 27*26'></option>
+    <option value='MONOSODIUM GLUTAMATE'></option>
+    <option value='MR.NIMAL KISSAN COCONUT OIL 1LTR'></option>
+    <option value='MR.NIRMAL FLOOR CLEANER'></option>
+    <option value='MR. SHAKTHIYS SEMIYA PAYASAM'></option>
+    <option value='MR.SHAKTHY'S LIME PICKLE'></option>
+    <option value='MUNTHIRI BOARD KAIRALI'></option>
+    <option value='MUNTHIRI NATURAL M'></option>
+    <option value='MUNTHIRI NATURAL S'></option>
+    <option value='MUNTHIRI WHITE M'></option>
+    <option value='MUTHIRA(HORSE GRAM)'></option>
+    <option value='NANNARI SARBATH (RAJASAL)'></option>
+    <option value='NATURAL MASALA BOARD'></option>
+    <option value='NAVARA RICE'></option>
+    <option value='NESTLE MILKMAID'></option>
+    <option value='NILAKADALA'></option>
+    <option value='NILAKADALA ROASTED'></option>
+    <option value='NIRAPARA PUTTUPODI 1KG'></option>
+    <option value='NIRAPARA PUTTUPODI 500GM'></option>
+    <option value='NOBLE FRAMES BAT'></option>
+    <option value='NOODLES 960GM (PKT)'></option>
+    <option value='NOODLES LOOSE'></option>
+    <option value='NOTE BOOK'></option>
+    <option value='OMAM(AYAMODAKAM)'></option>
+    <option value='ONION FRYUMS'></option>
+    <option value='ORID DALL'></option>
+    <option value='ORID DALL 1 KG PKT'></option>
+    <option value='ORID DHALL PKT 500G'></option>
+    <option value='ORIGANO BENCY RAVA 500GM'></option>
+    <option value='ORIGINAL FRYUMS PANIPURI'></option>
+    <option value='PANAMKALKANDAM FIRST'></option>
+    <option value='PANAMKALKANDAM M'></option>
+    <option value='PANAMKALKANDAM SUPER FIRST'></option>
+    <option value='PAPER ECO 4*4 TRAY'></option>
+    <option value='PAPER ROLL'></option>
+    <option value='PAPPAD 1/2 KG'></option>
+    <option value='PAPPAD 20 KG'></option>
+    <option value='PAPPAD PPF 24KG'></option>
+    <option value='PASSION FRUIT SQUASH'></option>
+</datalist>
+
+<div class="container" id="printableArea">
+    <h2>Kairali Traders sales order</h2>
+    
+    <form id="saleOrderForm">
+        <div class="form-group">
+            <label for="orderDate">Order Date:</label>
+            <input type="date" id="orderDate" required>
+        </div>
+
+        <div class="form-group">
+            <label for="sundryDebtor">Sundry Debtor:</label>
+            <input type="text" id="sundryDebtor" name="sundryDebtor" list="debtorList" required placeholder="-- Search & Select Debtor --" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label>Order Items:</label>
+            <div class="table-responsive">
+                <table id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Stock item name</th>
+                            <th style="width: 15%;">Qty</th>
+                            <th style="width: 15%;">Rate (₹)</th>
+                            <th style="width: 20%;">Amount (₹)</th>
+                            <th style="width: 10%;" class="no-print">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody">
+                        <tr>
+                            <td>
+                                <input type="text" class="stock-item" list="stockList" required placeholder="-- Search Item --" autocomplete="off">
+                            </td>
+                            <td><input type="number" class="qty" min="1" required></td>
+                            <td><input type="number" step="0.01" class="rate" required></td>
+                            <td><input type="number" class="amount" readonly placeholder="0.00"></td>
+                            <td class="no-print"><button type="button" class="btn btn-remove" onclick="removeRow(this)">Remove</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="total-container">
+                Total Amount: ₹<span id="grandTotal">0.00</span>
+            </div>
+            
+            <button type="button" class="btn no-print" onclick="addRow()">+ Add Item</button>
+        </div>
+
+        <div class="form-group no-print">
+            <button type="submit" id="submitBtn" class="btn" style="width: 100%; font-size: 16px; margin-top: 15px;">Save PDF & Send via WhatsApp</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const TARGET_WHATSAPP_NUMBER = "916238818630"; 
+
+    // Set today's date as default
+    document.getElementById('orderDate').valueAsDate = new Date();
+
+    // Event delegation for dynamic calculation
+    document.getElementById('itemsBody').addEventListener('input', function(e) {
+        if (e.target.classList.contains('qty') || e.target.classList.contains('rate')) {
+            const row = e.target.closest('tr');
+            const qty = parseFloat(row.querySelector('.qty').value) || 0;
+            const rate = parseFloat(row.querySelector('.rate').value) || 0;
+            const amountField = row.querySelector('.amount');
+            
+            amountField.value = (qty * rate).toFixed(2);
+            calculateGrandTotal();
+        }
+    });
+
+    function calculateGrandTotal() {
+        const amounts = document.querySelectorAll('.amount');
+        let total = 0;
+        amounts.forEach(input => {
+            total += parseFloat(input.value) || 0;
+        });
+        document.getElementById('grandTotal').innerText = total.toFixed(2);
+    }
+
+    function addRow() {
+        const tbody = document.getElementById('itemsBody');
+        const firstRow = tbody.querySelector('tr').cloneNode(true);
+        
+        firstRow.querySelector('.stock-item').value = "";
+        firstRow.querySelector('.qty').value = "";
+        firstRow.querySelector('.rate').value = "";
+        firstRow.querySelector('.amount').value = "";
+        
+        tbody.appendChild(firstRow);
+    }
+
+    function removeRow(button) {
+        const tbody = document.getElementById('itemsBody');
+        if (tbody.children.length > 1) {
+            button.closest('tr').remove();
+            calculateGrandTotal();
+        } else {
+            alert("At least one item is required.");
+        }
+    }
+
+    function validateInputs() {
+        const debtorInput = document.getElementById('sundryDebtor').value.trim();
+        const debtorOptions = Array.from(document.getElementById('debtorList').options).map(o => o.value);
+        if (!debtorOptions.includes(debtorInput)) {
+            alert("Please select a valid Debtor from the list.");
+            return false;
+        }
+
+        const stockInputs = document.querySelectorAll('.stock-item');
+        const stockOptions = Array.from(document.getElementById('stockList').options).map(o => o.value);
+        for (let input of stockInputs) {
+            if (!stockOptions.includes(input.value.trim())) {
+                alert("Please select a valid Stock Item from the list. Invalid entry: " + input.value);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function resetFormUI() {
+        document.getElementById('saleOrderForm').reset();
+        document.getElementById('orderDate').valueAsDate = new Date();
+        document.getElementById('grandTotal').innerText = "0.00";
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Save PDF & Send via WhatsApp";
+        submitBtn.disabled = false;
+    }
+
+    function fallbackDownload(blob, filename, whatsappUrl) {
+        // Triggers standard download if Share API is unsupported
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        // Wait a second for the download to register before opening WhatsApp
+        setTimeout(() => {
+            window.location.href = whatsappUrl;
+            resetFormUI();
+        }, 1500);
+    }
+
+    document.getElementById('saleOrderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validateInputs()) return;
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Generating PDF... Please wait";
+        submitBtn.disabled = true;
+        
+        const debtorName = document.getElementById('sundryDebtor').value.trim();
+        const date = document.getElementById('orderDate').value;
+        const total = document.getElementById('grandTotal').innerText;
+        const element = document.getElementById('printableArea');
+
+        const filename = `Kairali_Traders_Sale_Order_${debtorName.replace(/\s+/g, '_')}_${date}.pdf`;
+        
+        const opt = {
+            margin:       10,
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Output raw PDF Blob instead of auto-saving to allow for native mobile sharing
+        html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
+            
+            const message = `Hello, here is the new Sale Order for ${debtorName} dated ${date}. The total amount is ₹${total}.`;
+            const whatsappUrl = `https://wa.me/${TARGET_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            
+            // Fix for Mobile: Use Web Share API to attach the file directly to apps
+            if (navigator.canShare && navigator.share) {
+                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Sale Order PDF',
+                        text: message
+                    }).then(() => {
+                        resetFormUI();
+                    }).catch((error) => {
+                        console.log('Share canceled or failed. Falling back to download.', error);
+                        fallbackDownload(pdfBlob, filename, whatsappUrl);
+                    });
+                } else {
+                    fallbackDownload(pdfBlob, filename, whatsappUrl);
+                }
+            } else {
+                fallbackDownload(pdfBlob, filename, whatsappUrl);
+            }
+
+        }).catch(err => {
+            alert("Failed to generate PDF.");
+            console.error(err);
+            resetFormUI();
+        });
+    });
+</script>
+
+</body>
+</html>
