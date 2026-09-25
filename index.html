@@ -64,6 +64,7 @@
             cursor: not-allowed;
             font-weight: bold;
         }
+        /* Mobile-responsive table wrapper */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -119,8 +120,16 @@
             font-weight: bold;
             padding: 10px 0;
         }
+        /* Elements to hide during PDF generation */
         .html2pdf__container .no-print {
             display: none !important;
+        }
+        /* Styling for the temporary text spans inserted during PDF generation */
+        .print-text {
+            font-size: 14px;
+            font-family: inherit;
+            display: inline-block;
+            padding: 5px 0;
         }
     </style>
 </head>
@@ -618,7 +627,7 @@
 
         <div class="form-group">
             <label for="sundryDebtor">Sundry Debtor:</label>
-            <input type="text" id="sundryDebtor" name="sundryDebtor" list="debtorList" required placeholder="-- Search & Select Debtor --" autocomplete="off">
+            <input type="text" id="sundryDebtor" name="sundryDebtor" list="debtorList" required placeholder="-- Search, Select or Type Custom Debtor --" autocomplete="off">
         </div>
 
         <div class="form-group">
@@ -637,9 +646,9 @@
                     <tbody id="itemsBody">
                         <tr>
                             <td>
-                                <input type="text" class="stock-item" list="stockList" required placeholder="-- Search Item --" autocomplete="off">
+                                <input type="text" class="stock-item" list="stockList" required placeholder="-- Search, Select or Type Custom Item --" autocomplete="off">
                             </td>
-                            <td><input type="number" class="qty" min="1" required></td>
+                            <td><input type="number" class="qty" min="1" step="0.01" required></td>
                             <td><input type="number" step="0.01" class="rate" required></td>
                             <td><input type="number" class="amount" readonly placeholder="0.00"></td>
                             <td class="no-print"><button type="button" class="btn btn-remove" onclick="removeRow(this)">Remove</button></td>
@@ -710,25 +719,6 @@
         }
     }
 
-    function validateInputs() {
-        const debtorInput = document.getElementById('sundryDebtor').value.trim();
-        const debtorOptions = Array.from(document.getElementById('debtorList').options).map(o => o.value);
-        if (!debtorOptions.includes(debtorInput)) {
-            alert("Please select a valid Debtor from the list.");
-            return false;
-        }
-
-        const stockInputs = document.querySelectorAll('.stock-item');
-        const stockOptions = Array.from(document.getElementById('stockList').options).map(o => o.value);
-        for (let input of stockInputs) {
-            if (!stockOptions.includes(input.value.trim())) {
-                alert("Please select a valid Stock Item from the list. Invalid entry: " + input.value);
-                return false;
-            }
-        }
-        return true;
-    }
-
     function resetFormUI() {
         document.getElementById('saleOrderForm').reset();
         document.getElementById('orderDate').valueAsDate = new Date();
@@ -739,21 +729,40 @@
         submitBtn.disabled = false;
     }
 
+    // iPhone Fix: Flatten inputs to plain text before generating PDF to prevent iOS memory crash
+    function flattenInputsForPDF() {
+        const inputs = document.querySelectorAll('#printableArea input:not([type="button"]):not([type="submit"])');
+        inputs.forEach(input => {
+            const span = document.createElement('span');
+            span.className = 'print-text';
+            span.innerText = input.value;
+            // Hide the actual input and insert the text span
+            input.style.display = 'none';
+            input.parentNode.insertBefore(span, input);
+        });
+    }
+
+    // Revert inputs back to normal after PDF is generated
+    function restoreInputsAfterPDF() {
+        const spans = document.querySelectorAll('.print-text');
+        spans.forEach(span => span.remove());
+        const inputs = document.querySelectorAll('#printableArea input');
+        inputs.forEach(input => input.style.display = '');
+    }
+
     document.getElementById('saleOrderForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        if (!validateInputs()) return;
 
         const submitBtn = document.getElementById('submitBtn');
 
-        // IF THE USER IS CLICKING STEP 2 (SEND TO WHATSAPP)
+        // Step 2 Action
         if (submitBtn.innerText.includes("Step 2")) {
             window.location.href = currentWhatsappUrl;
             resetFormUI();
             return;
         }
 
-        // IF THE USER IS CLICKING STEP 1 (GENERATE PDF)
+        // Step 1 Action
         submitBtn.innerText = "Generating PDF... Please wait";
         submitBtn.disabled = true;
         
@@ -762,20 +771,25 @@
         const total = document.getElementById('grandTotal').innerText;
         const element = document.getElementById('printableArea');
 
+        // Apply iPhone memory fix by flattening form elements
+        flattenInputsForPDF();
+
         const filename = `Kairali_Traders_Sale_Order_${debtorName.replace(/\s+/g, '_')}_${date}.pdf`;
         
-        // FIX FOR iPHONE iOS MEMORY CRASH: Scale set to 1, windowWidth removed to ease memory usage.
         const opt = {
             margin:       10,
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.95 },
-            html2canvas:  { scale: 1, useCORS: true }, 
+            html2canvas:  { scale: 2, useCORS: true }, 
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // Added setTimeout so the browser UI updates to "Generating..." before iOS freezes the thread to draw the PDF
         setTimeout(() => {
             html2pdf().set(opt).from(element).save().then(() => {
+                
+                // Restore form back to normal
+                restoreInputsAfterPDF();
+
                 const message = `Hello, here is the new Sale Order for ${debtorName} dated ${date}. The total amount is ₹${total}.`;
                 currentWhatsappUrl = `https://wa.me/${TARGET_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
                 
@@ -784,6 +798,7 @@
                 submitBtn.disabled = false;
 
             }).catch(err => {
+                restoreInputsAfterPDF();
                 alert("Failed to generate PDF. Memory limit exceeded.");
                 console.error(err);
                 resetFormUI();
