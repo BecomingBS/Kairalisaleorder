@@ -764,30 +764,31 @@
 
         const filename = `Kairali_Traders_Sale_Order_${debtorName.replace(/\s+/g, '_')}_${date}.pdf`;
         
+        // FIX FOR iPHONE iOS MEMORY CRASH: Scale set to 1, windowWidth removed to ease memory usage.
         const opt = {
             margin:       10,
             filename:     filename,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+            image:        { type: 'jpeg', quality: 0.95 },
+            html2canvas:  { scale: 1, useCORS: true }, 
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // Use the universally supported .save() which prompts the native mobile file download perfectly
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Setup the WhatsApp URL for Step 2
-            const message = `Hello, here is the new Sale Order for ${debtorName} dated ${date}. The total amount is ₹${total}.`;
-            currentWhatsappUrl = `https://wa.me/${TARGET_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-            
-            // Switch button to Step 2
-            submitBtn.innerText = "Step 2: Send via WhatsApp";
-            submitBtn.style.backgroundColor = "#25D366"; // WhatsApp Green
-            submitBtn.disabled = false;
+        // Added setTimeout so the browser UI updates to "Generating..." before iOS freezes the thread to draw the PDF
+        setTimeout(() => {
+            html2pdf().set(opt).from(element).save().then(() => {
+                const message = `Hello, here is the new Sale Order for ${debtorName} dated ${date}. The total amount is ₹${total}.`;
+                currentWhatsappUrl = `https://wa.me/${TARGET_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+                
+                submitBtn.innerText = "Step 2: Send via WhatsApp";
+                submitBtn.style.backgroundColor = "#25D366"; // WhatsApp Green
+                submitBtn.disabled = false;
 
-        }).catch(err => {
-            alert("Failed to generate PDF.");
-            console.error(err);
-            resetFormUI();
-        });
+            }).catch(err => {
+                alert("Failed to generate PDF. Memory limit exceeded.");
+                console.error(err);
+                resetFormUI();
+            });
+        }, 100);
     });
 </script>
 
