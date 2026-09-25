@@ -126,7 +126,6 @@
 </head>
 <body>
 
-<!-- Centralized Data Lists for Native Mobile Search -->
 <datalist id="debtorList">
     <option value="ALIKKA"></option>
     <option value="AMANA STORE- MKD"></option>
@@ -657,18 +656,17 @@
         </div>
 
         <div class="form-group no-print">
-            <button type="submit" id="submitBtn" class="btn" style="width: 100%; font-size: 16px; margin-top: 15px;">Save PDF & Send via WhatsApp</button>
+            <button type="submit" id="submitBtn" class="btn" style="width: 100%; font-size: 16px; margin-top: 15px;">Step 1: Save PDF</button>
         </div>
     </form>
 </div>
 
 <script>
     const TARGET_WHATSAPP_NUMBER = "916238818630"; 
+    let currentWhatsappUrl = "";
 
-    // Set today's date as default
     document.getElementById('orderDate').valueAsDate = new Date();
 
-    // Event delegation for dynamic calculation
     document.getElementById('itemsBody').addEventListener('input', function(e) {
         if (e.target.classList.contains('qty') || e.target.classList.contains('rate')) {
             const row = e.target.closest('tr');
@@ -736,26 +734,9 @@
         document.getElementById('orderDate').valueAsDate = new Date();
         document.getElementById('grandTotal').innerText = "0.00";
         const submitBtn = document.getElementById('submitBtn');
-        submitBtn.innerText = "Save PDF & Send via WhatsApp";
+        submitBtn.innerText = "Step 1: Save PDF";
+        submitBtn.style.backgroundColor = "#2563eb"; // Original Blue
         submitBtn.disabled = false;
-    }
-
-    function fallbackDownload(blob, filename, whatsappUrl) {
-        // Triggers standard download if Share API is unsupported
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        
-        // Wait a second for the download to register before opening WhatsApp
-        setTimeout(() => {
-            window.location.href = whatsappUrl;
-            resetFormUI();
-        }, 1500);
     }
 
     document.getElementById('saleOrderForm').addEventListener('submit', function(e) {
@@ -764,6 +745,15 @@
         if (!validateInputs()) return;
 
         const submitBtn = document.getElementById('submitBtn');
+
+        // IF THE USER IS CLICKING STEP 2 (SEND TO WHATSAPP)
+        if (submitBtn.innerText.includes("Step 2")) {
+            window.location.href = currentWhatsappUrl;
+            resetFormUI();
+            return;
+        }
+
+        // IF THE USER IS CLICKING STEP 1 (GENERATE PDF)
         submitBtn.innerText = "Generating PDF... Please wait";
         submitBtn.disabled = true;
         
@@ -782,33 +772,16 @@
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // Output raw PDF Blob instead of auto-saving to allow for native mobile sharing
-        html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
-            
+        // Use the universally supported .save() which prompts the native mobile file download perfectly
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Setup the WhatsApp URL for Step 2
             const message = `Hello, here is the new Sale Order for ${debtorName} dated ${date}. The total amount is ₹${total}.`;
-            const whatsappUrl = `https://wa.me/${TARGET_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            currentWhatsappUrl = `https://wa.me/${TARGET_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
             
-            // Fix for Mobile: Use Web Share API to attach the file directly to apps
-            if (navigator.canShare && navigator.share) {
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                
-                if (navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        files: [file],
-                        title: 'Sale Order PDF',
-                        text: message
-                    }).then(() => {
-                        resetFormUI();
-                    }).catch((error) => {
-                        console.log('Share canceled or failed. Falling back to download.', error);
-                        fallbackDownload(pdfBlob, filename, whatsappUrl);
-                    });
-                } else {
-                    fallbackDownload(pdfBlob, filename, whatsappUrl);
-                }
-            } else {
-                fallbackDownload(pdfBlob, filename, whatsappUrl);
-            }
+            // Switch button to Step 2
+            submitBtn.innerText = "Step 2: Send via WhatsApp";
+            submitBtn.style.backgroundColor = "#25D366"; // WhatsApp Green
+            submitBtn.disabled = false;
 
         }).catch(err => {
             alert("Failed to generate PDF.");
